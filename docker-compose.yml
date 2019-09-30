@@ -1,6 +1,7 @@
 version: '2'
 services:
     chrome:
+        restart: always
         image: selenium/node-chrome:3.14.0-gallium
         volumes:
           - /dev/shm:/dev/shm
@@ -10,6 +11,7 @@ services:
           HUB_HOST: hub
     hub:
         image: selenium/hub:3.14.0-gallium
+        restart: always
     postgres:
         image: postgres
         restart: always
@@ -36,6 +38,14 @@ services:
           - db.env
         ports:
           - "8088:80"
+    certstream-server:
+        image: certstream
+        environment:
+          - NOSSL=1
+        restart: always
+    certstream-feeder:
+        build: feed/certstream
+        restart: always
 volumes:
     zonemonitor-db-versions:
     zonemonitor-screenshots:
