@@ -12,3 +12,7 @@ docker-compose up --build --scale chrome=3 --scale worker=3
 docker-compose down -v
 ```
 
+## Copyrights
+
+2019 CERT.PL, CSIRT.CZ
+
