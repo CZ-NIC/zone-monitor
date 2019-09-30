@@ -2,4 +2,5 @@ selenium
 flask-migrate
 psycopg2-binary
 redis
+fuzzywuzzy
 

@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.common.exceptions import WebDriverException
 
+from fuzzywuzzy import process as fuzzy_process
 from model import db, Domain
 
 app = Flask(__name__, static_url_path='')
@@ -44,6 +45,14 @@ def push():
     dn = Domain()
     dn.name = request.form['domain']
 
+    keywords = app.config['SUSPICIOUS_KEYWORDS']
+    matches = []
+
+    for k in keywords:
+        matches.extend([{"keyword": k, "matched": word, "score": score} for word, score in fuzzy_process.extractBests(k, (dn.name,), score_cutoff=70)])
+
+    dn.status = "suspicious" if matches else "non-suspicious"
+
     try:
         db.session.add(dn)
         db.session.commit()
@@ -51,13 +60,16 @@ def push():
         db.session.rollback()
         return jsonify({"status": "already-exists"})
     else:
-        rs.rpush('screen-jobs', dn.name)
-        return jsonify({"status": "new"})
+        if matches:
+            rs.rpush('screen-jobs', dn.name)
+            return jsonify({"status": "suspicious", "matches": matches})
+        else:
+            return jsonify({"status": "non-suspicious"})
 
 
 @app.route('/')
 def main():
-    domains = Domain.query.all()
+    domains = Domain.query.filter(Domain.status == "suspicious").all()
 
     return render_template('domains.html', domains=domains)
 
