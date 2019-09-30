@@ -69,9 +69,10 @@ def push():
 
 @app.route('/')
 def main():
-    domains = Domain.query.filter(Domain.status == "suspicious").all()
+    domains = Domain.query.all()
+    keywords = ', '.join(app.config['SUSPICIOUS_KEYWORDS'])
 
-    return render_template('domains.html', domains=domains)
+    return render_template('domains.html', domains=domains, keywords=keywords)
 
 
 @app.cli.command('screenshot-worker')
