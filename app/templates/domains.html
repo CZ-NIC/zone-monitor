@@ -1,3 +1,8 @@
+<h1>Add domain</h1>
+<form action="/push" method="POST">
+    Domain: <input type="text" name="domain" value=""> <button type="submit">Add</button>
+</form>
+
 {% for domain in domains %}
 
 <h1><a href="/screenshot?url=http://{{ domain.name }}">{{ domain.name }}</a></h1>
