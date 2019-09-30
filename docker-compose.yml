@@ -23,17 +23,20 @@ services:
         restart: always
         command: flask screenshot-worker
         volumes:
-          - ./volumes/screenshots:/app/static/screenshots
+          - zonemonitor-screenshots:/app/static/screenshots
         environment:
           - FLASK_APP=main
     app:
         build: .
         restart: always
         volumes:
-          - ./volumes/versions:/app/migrations/versions
-          - ./volumes/screenshots:/app/static/screenshots
+          - zonemonitor-db-versions:/app/migrations/versions
+          - zonemonitor-screenshots:/app/static/screenshots
         env_file:
           - db.env
         ports:
           - "8088:80"
+volumes:
+    zonemonitor-db-versions:
+    zonemonitor-screenshots:
 
