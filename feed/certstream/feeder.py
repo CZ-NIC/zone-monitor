@@ -5,6 +5,7 @@ import sys
 import datetime
 import certstream
 import requests
+import json
 
 def print_callback(message, context):
     logging.debug("Message -> {}".format(message))
@@ -26,8 +27,8 @@ def print_callback(message, context):
         for dn in filtered:
             res = requests.post('http://app/push', data={'domain': dn})
             res.raise_for_status()
+            sys.stdout.write("[{}] {} => {}".format(datetime.datetime.now().strftime('%m/%d/%y %H:%M:%S'), dn, json.dumps(res.json())))
 
-        sys.stdout.write(u"[{}] {}\n".format(datetime.datetime.now().strftime('%m/%d/%y %H:%M:%S'), ",".join(filtered)))
         sys.stdout.flush()
 
 logging.basicConfig(format='[%(levelname)s:%(name)s] %(asctime)s - %(message)s', level=logging.INFO)

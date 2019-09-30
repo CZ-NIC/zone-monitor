@@ -2,8 +2,9 @@ import os
 
 from redis import StrictRedis
 from tempfile import NamedTemporaryFile
-from flask import Flask, escape, request, send_file, after_this_request, render_template
+from flask import Flask, escape, request, send_file, after_this_request, render_template, jsonify
 from flask_migrate import Migrate
+from sqlalchemy.exc import IntegrityError
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.common.exceptions import WebDriverException
@@ -42,11 +43,16 @@ def screenshot():
 def push():
     dn = Domain()
     dn.name = request.form['domain']
-    db.session.add(dn)
-    db.session.commit()
 
-    rs.rpush('screen-jobs', dn.name)
-    return 'OK'
+    try:
+        db.session.add(dn)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"status": "already-exists"})
+    else:
+        rs.rpush('screen-jobs', dn.name)
+        return jsonify({"status": "new"})
 
 
 @app.route('/')
@@ -65,7 +71,7 @@ def screenshot_worker():
             driver.get('http://' + job)
             driver.save_screenshot(os.path.join('/app/static/screenshots', job + '.png'))
         except WebDriverException as e:
-            raise RuntimeError(str(e))
+            print('WebDriverException: ' + str(e))
         finally:
             driver.quit()
 
