@@ -1,0 +1,39 @@
+version: '2'
+services:
+    chrome:
+        image: selenium/node-chrome:3.14.0-gallium
+        volumes:
+          - /dev/shm:/dev/shm
+        depends_on:
+          - hub
+        environment:
+          HUB_HOST: hub
+    hub:
+        image: selenium/hub:3.14.0-gallium
+    postgres:
+        image: postgres
+        restart: always
+        # generate with python3 make-env.py
+        env_file:
+          - db.env
+    redis:
+        image: redis
+    worker:
+        build: .
+        restart: always
+        command: flask screenshot-worker
+        volumes:
+          - ./volumes/screenshots:/app/static/screenshots
+        environment:
+          - FLASK_APP=main
+    app:
+        build: .
+        restart: always
+        volumes:
+          - ./volumes/versions:/app/migrations/versions
+          - ./volumes/screenshots:/app/static/screenshots
+        env_file:
+          - db.env
+        ports:
+          - "8088:80"
+

@@ -1,0 +1,6 @@
+{% for domain in domains %}
+
+<h1><a href="/screenshot?url=http://{{ domain.name }}">{{ domain.name }}</a></h1>
+<img src="/static/screenshots/{{ domain.name }}.png">
+
+{% endfor %}
