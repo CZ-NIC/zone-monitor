@@ -1,11 +1,22 @@
-<h1>Add domain</h1>
+{% extends "_layout.html" %}
+
+{% block content %}
+<h1>Suspicious domains</h1>
+<h2>Add domain</h2>
 <form action="/push" method="POST">
     Domain: <input type="text" name="domain" value=""> <button type="submit">Add</button>
 </form>
 
 {% for domain in domains %}
 
-<h1><a href="/screenshot?url=http://{{ domain.name }}">{{ domain.name }}</a></h1>
+<div class="card">
+<div class="card-body">
+<h2><a href="http://{{ domain.name }}">{{ domain.name }}</a></h2>
 <img src="/static/screenshots/{{ domain.name }}.png">
+</div>
+</div>
 
 {% endfor %}
+
+{% endblock %}
+
