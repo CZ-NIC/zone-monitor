@@ -40,7 +40,7 @@ def push():
         matches.extend([{"keyword": k, "matched": word, "score": score}
                         for word, score in fuzzy_process.extractBests(k, (dn.name,), score_cutoff=70)])
 
-    if matches or request.args.get('from-ui'):
+    if matches or request.form.get('from-ui'):
         dn.status = "check-queued"
 
     try:
@@ -53,7 +53,7 @@ def push():
 
         return jsonify({"status": "already-exists", "matches": matches})
     else:
-        if matches or request.args.get('from-ui'):
+        if matches or request.form.get('from-ui'):
             rs.rpush('screen-jobs', json.dumps({"uid": dn.uid}))
 
         if request.form.get('from-ui'):
