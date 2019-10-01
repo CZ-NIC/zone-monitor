@@ -24,16 +24,16 @@ services:
         build: .
         restart: always
         command: flask requeue-worker
-        environment:
-          - FLASK_APP=main
+        env_file:
+          - db.env
     screenshot-worker:
         build: .
         restart: always
         command: flask screenshot-worker
+        env_file:
+          - db.env
         volumes:
           - zonemonitor-screenshots:/app/static/screenshots
-        environment:
-          - FLASK_APP=main
     app:
         build: .
         restart: always
