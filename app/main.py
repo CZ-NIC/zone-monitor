@@ -70,9 +70,15 @@ def vote(domain_uid):
 @app.route('/')
 def main():
     domains = Domain.query.filter(Domain.status == "manual-check").all()
+    return render_template('domains.html', domains=domains)
+
+
+@app.route('/all')
+def all_domains():
+    domains = Domain.query.all()
     keywords = ', '.join(app.config['SUSPICIOUS_KEYWORDS'])
 
-    return render_template('domains.html', domains=domains, keywords=keywords)
+    return render_template('all.html', domains=domains, keywords=keywords)
 
 
 @app.cli.command('requeue-worker')

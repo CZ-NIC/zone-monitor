@@ -2,13 +2,6 @@
 
 {% block content %}
     <h1>Suspicious domains</h1>
-    <h2>Add domain</h2>
-    <p>Suspicious keywords: {{ keywords }}</p>
-    <form action="/push" method="POST">
-        Domain: <input type="text" name="domain" value="">
-        <button type="submit">Add</button>
-    </form>
-
     {% for domain in domains %}
         <div class="card">
             <div class="card-body">
