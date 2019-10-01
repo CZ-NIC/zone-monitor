@@ -78,13 +78,13 @@ def vote(domain_uid):
 def main():
     check_later = db.session.query(Domain.uid).filter(Domain.status == "check-later").count()
     check_queued = db.session.query(Domain.uid).filter(Domain.status == "check-queued").count()
-    domains = Domain.query.filter(Domain.status == "manual-check").order_by(Domain.uid.asc()).limit(1).all()
+    domains = Domain.query.filter(Domain.status == "manual-check").order_by(Domain.time_added.asc()).limit(1).all()
     return render_template('domains.html', domains=domains, check_later=check_later, check_queued=check_queued)
 
 
 @app.route('/all')
 def all_domains():
-    domains = Domain.query.order_by(Domain.uid.asc()).all()
+    domains = Domain.query.order_by(Domain.time_added.asc()).all()
     keywords = ', '.join(app.config['SUSPICIOUS_KEYWORDS'])
 
     return render_template('all.html', domains=domains, keywords=keywords)
@@ -92,7 +92,7 @@ def all_domains():
 
 @app.route('/malicious')
 def malicious_domains():
-    domains = Domain.query.filter(Domain.status == "malicious").order_by(Domain.uid.asc()).all()
+    domains = Domain.query.filter(Domain.status == "malicious").order_by(Domain.time_added.asc()).all()
 
     return render_template('malicious.html', domains=domains)
 

@@ -9,6 +9,7 @@
     <tr>
         <th>Name</th>
         <th>Status</th>
+        <th>Time added</th>
         <th>Last checked</th>
     </tr>
     </thead>
@@ -17,6 +18,7 @@
         <tr>
             <td>{{ domain.name }}</td>
             <td>{{ domain.status }}</td>
+            <td>{{ domain.time_added }}</td>
             <td>{{ domain.last_checked }}</td>
         </tr>
     {% endfor %}
