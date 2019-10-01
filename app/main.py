@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import time
 import uuid
 
 from redis import StrictRedis
@@ -75,8 +76,10 @@ def vote(domain_uid):
 
 @app.route('/')
 def main():
+    check_later = db.session.query(Domain.uid).filter(Domain.status == "check-later").count()
+    check_queued = db.session.query(Domain.uid).filter(Domain.status == "check-queued").count()
     domains = Domain.query.filter(Domain.status == "manual-check").order_by(Domain.uid.asc()).limit(1).all()
-    return render_template('domains.html', domains=domains)
+    return render_template('domains.html', domains=domains, check_later=check_later, check_queued=check_queued)
 
 
 @app.route('/all')
@@ -97,12 +100,18 @@ def malicious_domains():
 @app.cli.command('requeue-worker')
 def requeue_worker():
     while True:
+        time.sleep(2.0)
+
         requeue_domains = Domain.query.filter(and_(
             Domain.status == "check-later",
             Domain.last_checked < datetime.datetime.utcnow() - datetime.timedelta(minutes=5))).all()
 
         for dn in requeue_domains:
+            dn.status = "check-queued"
+            db.session.merge(dn)
             rs.rpush('screen-jobs', json.dumps({"uid": dn.uid}))
+
+        db.session.flush()
 
 
 @app.cli.command('screenshot-worker')
