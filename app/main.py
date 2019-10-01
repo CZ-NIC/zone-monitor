@@ -121,6 +121,7 @@ def requeue_worker():
             rs.rpush('screen-jobs', json.dumps({"uid": dn.uid}))
 
         db.session.flush()
+        db.session.commit()
 
 
 @app.cli.command('screenshot-worker')
