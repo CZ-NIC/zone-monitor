@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import re
 import time
 import uuid
 
@@ -14,6 +15,8 @@ from selenium.webdriver import DesiredCapabilities
 from selenium.common.exceptions import WebDriverException
 
 from fuzzywuzzy import process as fuzzy_process
+from werkzeug.exceptions import BadRequest
+
 from model import db, Domain
 
 app = Flask(__name__, static_url_path='')
@@ -30,6 +33,9 @@ def push():
     dn.uid = str(uuid.uuid4())
     dn.name = request.form['domain']
     dn.status = "legitimate"
+
+    if not re.match(r'^[a-zA-Z0-9-_\\.]+$', dn.name):
+        raise BadRequest('Invalid domain name')
 
     while dn.name.startswith('*.'):
         dn.name = dn.name.split('.', 1)[1]
