@@ -8,7 +8,8 @@
                 <h2><a href="http://{{ domain.name }}">{{ domain.name }}</a></h2>
                 <form action="/set_status/{{ domain.uid }}" method="POST">
                     <button class="btn btn-success" name="status" value="checked-legitimate">Legitimate</button>
-                    <button class="btn btn-danger" name="status" value="check-later">Re-check later</button>
+                    <button class="btn btn-warning" name="status" value="check-later">Re-check later</button>
+                    <button class="btn btn-danger" name="status" value="malicious">Malicious</button>
                 </form>
                 <img src="/static/screenshots/{{ domain.uid }}/screenshot.png">
             </div>

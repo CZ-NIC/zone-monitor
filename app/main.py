@@ -40,7 +40,7 @@ def push():
         matches.extend([{"keyword": k, "matched": word, "score": score}
                         for word, score in fuzzy_process.extractBests(k, (dn.name,), score_cutoff=70)])
 
-    if matches:
+    if matches or request.args.get('from-ui'):
         dn.status = "check-queued"
 
     try:
@@ -48,15 +48,15 @@ def push():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        if request.args.get('from-ui'):
+        if request.form.get('from-ui'):
             return redirect('/')
 
         return jsonify({"status": "already-exists", "matches": matches})
     else:
-        if matches:
+        if matches or request.args.get('from-ui'):
             rs.rpush('screen-jobs', json.dumps({"uid": dn.uid}))
 
-        if request.args.get('from-ui'):
+        if request.form.get('from-ui'):
             return redirect('/')
 
         return jsonify({"status": dn.status, "matches": matches})
@@ -75,13 +75,13 @@ def vote(domain_uid):
 
 @app.route('/')
 def main():
-    domains = Domain.query.filter(Domain.status == "manual-check").all()
+    domains = Domain.query.filter(Domain.status == "manual-check").limit(1).all()
     return render_template('domains.html', domains=domains)
 
 
 @app.route('/all')
 def all_domains():
-    domains = Domain.query.all()
+    domains = Domain.query.order_by(Domain.uid.asc()).all()
     keywords = ', '.join(app.config['SUSPICIOUS_KEYWORDS'])
 
     return render_template('all.html', domains=domains, keywords=keywords)
