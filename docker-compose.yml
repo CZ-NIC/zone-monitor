@@ -20,7 +20,13 @@ services:
           - db.env
     redis:
         image: redis
-    worker:
+    requeue-worker:
+        build: .
+        restart: always
+        command: flask requeue-worker
+        environment:
+          - FLASK_APP=main
+    screenshot-worker:
         build: .
         restart: always
         command: flask screenshot-worker

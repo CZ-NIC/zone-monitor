@@ -1,34 +1,26 @@
 {% extends "_layout.html" %}
 
 {% block content %}
-<h1>Suspicious domains</h1>
-<h2>Add domain</h2>
-<p>Suspicious keywords: {{ keywords }}</p>
-<form action="/push" method="POST">
-    Domain: <input type="text" name="domain" value=""> <button type="submit">Add</button>
-</form>
+    <h1>Suspicious domains</h1>
+    <h2>Add domain</h2>
+    <p>Suspicious keywords: {{ keywords }}</p>
+    <form action="/push" method="POST">
+        Domain: <input type="text" name="domain" value="">
+        <button type="submit">Add</button>
+    </form>
 
-{% for domain in domains %}
-
-{% if domain.status == "suspicious" %}
-<div class="card">
-<div class="card-body">
-<h2><a href="http://{{ domain.name }}">{{ domain.name }}</a></h2>
-<img src="/static/screenshots/{{ domain.name }}.png">
-</div>
-</div>
-{% endif %}
-
-{% endfor %}
-
-<h2>Non-suspicious domains</h2>
-<ul>
-{% for domain in domains %}
-{% if domain.status != "suspicious" %}
-<li>{{ domain.name }}</li>
-{% endif %}
-{% endfor %}
-</ul>
+    {% for domain in domains %}
+        <div class="card">
+            <div class="card-body">
+                <h2><a href="http://{{ domain.name }}">{{ domain.name }}</a></h2>
+                <form action="/set_status/{{ domain.uid }}" method="POST">
+                    <button class="btn btn-success" name="status" value="checked-legitimate">Legitimate</button>
+                    <button class="btn btn-danger" name="status" value="check-later">Re-check later</button>
+                </form>
+                <img src="/static/screenshots/{{ domain.uid }}/screenshot.png">
+            </div>
+        </div>
+    {% endfor %}
 
 {% endblock %}
 
