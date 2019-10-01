@@ -48,10 +48,16 @@ def push():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
+        if request.args.get('from-ui'):
+            return redirect('/')
+
         return jsonify({"status": "already-exists", "matches": matches})
     else:
         if matches:
             rs.rpush('screen-jobs', json.dumps({"uid": dn.uid}))
+
+        if request.args.get('from-ui'):
+            return redirect('/')
 
         return jsonify({"status": dn.status, "matches": matches})
 
