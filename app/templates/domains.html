@@ -2,8 +2,6 @@
 
 {% block content %}
     <h1>Suspicious domains</h1>
-    <p>Queued screenshots: {{ check_queued }} domains</p>
-    <p>Queued for re-check later: {{ check_later }} domains</p>
 
     {% for domain in domains %}
         <div class="card">
@@ -18,6 +16,8 @@
             </div>
         </div>
     {% endfor %}
+
+    <p>Queued screenshots: {{ check_queued }} domains | Queued for re-check later: {{ check_later }} domains</p>
 
 {% endblock %}
 
