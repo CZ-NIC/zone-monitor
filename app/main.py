@@ -106,6 +106,7 @@ def malicious_domains():
 @app.cli.command('requeue-worker')
 def requeue_worker():
     while True:
+        print('Running requeue...')
         time.sleep(2.0)
 
         recheck_interval = datetime.timedelta(seconds=app.config['RECHECK_TIME_SEC'])
@@ -114,6 +115,7 @@ def requeue_worker():
             Domain.last_checked < datetime.datetime.utcnow() - recheck_interval)).all()
 
         for dn in requeue_domains:
+            print('Requeue domain: {}'.format(dn.name))
             dn.status = "check-queued"
             db.session.merge(dn)
             rs.rpush('screen-jobs', json.dumps({"uid": dn.uid}))
@@ -124,14 +126,24 @@ def requeue_worker():
 @app.cli.command('screenshot-worker')
 def screenshot_worker():
     while True:
+        print('Waiting for a new job...')
+
         driver = None
-        job = json.loads(rs.blpop('screen-jobs')[1])
+        data = rs.blpop('screen-jobs', timeout=30)
+
+        if not data:
+            continue
+
+        job = json.loads(data[1])
         dn = Domain.query.get(job['uid'])
         dn.last_checked = datetime.datetime.utcnow()
+        print('Fetching website: {}'.format(dn.name))
 
         try:
             driver = webdriver.Remote(command_executor='http://hub:4444/wd/hub',
                                       desired_capabilities=DesiredCapabilities.CHROME)
+            driver.set_page_load_timeout(30)
+            driver.implicitly_wait(30)
             driver.get('http://' + dn.name)
             domain_root = os.path.join('/app/static/screenshots', dn.uid)
             os.makedirs(domain_root, exist_ok=True)
