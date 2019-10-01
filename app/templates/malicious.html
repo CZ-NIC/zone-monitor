@@ -1,0 +1,24 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+    <h1>Malicious domains</h1>
+    <table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Last checked</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for domain in domains %}
+        <tr>
+            <td>{{ domain.name }}</td>
+            <td>{{ domain.status }}</td>
+            <td>{{ domain.last_checked }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
+{% endblock %}

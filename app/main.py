@@ -75,7 +75,7 @@ def vote(domain_uid):
 
 @app.route('/')
 def main():
-    domains = Domain.query.filter(Domain.status == "manual-check").limit(1).all()
+    domains = Domain.query.filter(Domain.status == "manual-check").order_by(Domain.uid.asc()).limit(1).all()
     return render_template('domains.html', domains=domains)
 
 
@@ -85,6 +85,13 @@ def all_domains():
     keywords = ', '.join(app.config['SUSPICIOUS_KEYWORDS'])
 
     return render_template('all.html', domains=domains, keywords=keywords)
+
+
+@app.route('/malicious')
+def malicious_domains():
+    domains = Domain.query.filter(Domain.status == "malicious").order_by(Domain.uid.asc()).all()
+
+    return render_template('malicious.html', domains=domains)
 
 
 @app.cli.command('requeue-worker')
