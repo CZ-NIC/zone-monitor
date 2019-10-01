@@ -102,9 +102,10 @@ def requeue_worker():
     while True:
         time.sleep(2.0)
 
+        recheck_interval = datetime.timedelta(seconds=app.config['RECHECK_TIME_SEC'])
         requeue_domains = Domain.query.filter(and_(
             Domain.status == "check-later",
-            Domain.last_checked < datetime.datetime.utcnow() - datetime.timedelta(minutes=5))).all()
+            Domain.last_checked < datetime.datetime.utcnow() - recheck_interval)).all()
 
         for dn in requeue_domains:
             dn.status = "check-queued"

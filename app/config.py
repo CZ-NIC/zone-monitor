@@ -10,3 +10,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 SUSPICIOUS_KEYWORDS = ['bank', 'kredit', 'prihl', 'bezpecn', 'microsoft', 'google']
 
+# how many seconds after domain is re-checked
+# set it to something like 60*60*24*7 on production
+RECHECK_TIME_SEC = 300
